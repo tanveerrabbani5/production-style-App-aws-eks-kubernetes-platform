@@ -1,5 +1,5 @@
 module "ecr" {
   source = "../../modules/ecr"
 
-  repository_name = "cloudops-platform"
+  repository_name = "k8s-eks-app-deployment"
 }
