@@ -69,3 +69,13 @@ module "eks" {
 
   node_max_size = 2
 }
+
+
+###----Module SECURITY
+
+module "security" {
+  source = "../../modules/security"
+
+  name   = "k8s-eks-app-deployment"
+  vpc_id = module.vpc.vpc_id
+}
