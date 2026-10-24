@@ -42,3 +42,30 @@ module "iam" {
 }
 
 
+###----Module EKS
+
+module "eks" {
+  source = "../../modules/eks"
+
+  cluster_name = "k8s-eks-app-deployment"
+
+  cluster_role_arn = module.iam.eks_cluster_role_arn
+
+  node_role_arn = module.iam.eks_node_role_arn
+
+  vpc_id = module.vpc.vpc_id
+
+  private_subnet_ids = module.vpc.private_subnet_ids
+
+  kubernetes_version = "1.33"
+
+  node_instance_types = [
+    "t3.micro"
+  ]
+
+  node_desired_size = 1
+
+  node_min_size = 1
+
+  node_max_size = 2
+}
