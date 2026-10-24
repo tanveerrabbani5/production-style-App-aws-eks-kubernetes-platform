@@ -1,0 +1,64 @@
+###----BACKEND DEPLOYMENT
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-eks-app-backend
+  namespace: k8s-eks-app
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: k8s-eks-app-backend
+
+  template:
+    metadata:
+      labels:
+        app: k8s-eks-app-backend
+
+    spec:
+
+      containers:
+        - name: backend
+
+          image: REPLACE_WITH_ECR_IMAGE
+
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+
+          envFrom:
+            - configMapRef:
+                name: k8s-eks-app-config
+
+            - secretRef:
+                name: k8s-eks-app-secret
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+
+            initialDelaySeconds: 20
+            periodSeconds: 20

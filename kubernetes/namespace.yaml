@@ -1,0 +1,8 @@
+###----APPLICATION NAMESPACE
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-eks-app
+  labels:
+    app: k8s-eks-app

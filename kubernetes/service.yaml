@@ -1,0 +1,22 @@
+###----BACKEND SERVICE
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-eks-app-backend
+  namespace: k8s-eks-app
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: k8s-eks-app-backend
+
+  ports:
+    - name: http
+
+      port: 80
+
+      targetPort: 5000
+
+      protocol: TCP

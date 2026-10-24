@@ -1,0 +1,13 @@
+###----APPLICATION CONFIGURATION
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-eks-app-config
+  namespace: k8s-eks-app
+
+data:
+  APP_ENV: "production"
+  DB_HOST: "REPLACE_WITH_RDS_ENDPOINT"
+  DB_PORT: "5432"
+  DB_NAME: "cloudops"
