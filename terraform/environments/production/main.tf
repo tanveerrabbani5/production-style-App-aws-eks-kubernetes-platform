@@ -79,3 +79,30 @@ module "security" {
   name   = "k8s-eks-app-deployment"
   vpc_id = module.vpc.vpc_id
 }
+
+
+###----Module RDS
+
+module "rds" {
+  source = "../../modules/rds"
+
+  identifier = "k8s-eks-app-deployment-db"
+
+  database_name = "cloudops"
+
+  engine = "postgres"
+
+  engine_version = "17"
+
+  instance_class = "db.t3.micro"
+
+  username = "cloudopsadmin"
+
+  password = var.db_password
+
+  private_subnet_ids = module.vpc.private_subnet_ids
+
+  security_group_ids = [
+    module.security.rds_security_group_id
+  ]
+}
