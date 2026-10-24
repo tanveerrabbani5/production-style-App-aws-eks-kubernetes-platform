@@ -31,3 +31,14 @@ module "vpc" {
     "10.0.12.0/24"
   ]
 }
+
+
+###----Module IAM
+
+module "iam" {
+  source = "../../modules/iam"
+
+  name = "k8s-eks-app-deployment"
+}
+
+
