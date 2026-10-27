@@ -128,3 +128,73 @@ resource "aws_iam_policy" "aws_load_balancer_controller" {
 }
 
 
+###----EKS OIDC PROVIDER
+
+data "aws_iam_openid_connect_provider" "eks" {
+  url = var.eks_oidc_issuer_url
+}
+
+
+###----AWS LOAD BALANCER CONTROLLER TRUST POLICY
+
+data "aws_iam_policy_document" "aws_load_balancer_controller_assume_role" {
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRoleWithWebIdentity"
+    ]
+
+    principals {
+      type = "Federated"
+
+      identifiers = [
+        data.aws_iam_openid_connect_provider.eks.arn
+      ]
+    }
+
+    condition {
+      test = "StringEquals"
+
+      variable = "${replace(var.eks_oidc_issuer_url, "https://", "")}:sub"
+
+      values = [
+        "system:serviceaccount:kube-system:aws-load-balancer-controller"
+      ]
+    }
+
+    condition {
+      test = "StringEquals"
+
+      variable = "${replace(var.eks_oidc_issuer_url, "https://", "")}:aud"
+
+      values = [
+        "sts.amazonaws.com"
+      ]
+    }
+  }
+}
+
+###----AWS LOAD BALANCER CONTROLLER IAM ROLE
+
+resource "aws_iam_role" "aws_load_balancer_controller" {
+  name = "k8s-eks-app-deployment-aws-load-balancer-controller"
+
+  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_controller_assume_role.json
+
+  tags = {
+    Name = "k8s-eks-app-deployment-aws-load-balancer-controller"
+  }
+}
+
+
+###----AWS LOAD BALANCER CONTROLLER POLICY ATTACHMENT
+
+resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller" {
+  role = aws_iam_role.aws_load_balancer_controller.name
+
+  policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
+}
+
+
