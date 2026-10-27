@@ -114,3 +114,17 @@ resource "aws_iam_role" "load_balancer_controller" {
 }
 
 
+###----AWS LOAD BALANCER CONTROLLER IAM POLICY
+
+resource "aws_iam_policy" "aws_load_balancer_controller" {
+  name        = "k8s-eks-app-deployment-aws-load-balancer-controller"
+  description = "IAM permissions for AWS Load Balancer Controller"
+
+  policy = file("${path.module}/aws-load-balancer-controller-policy.json")
+
+  tags = {
+    Name = "k8s-eks-app-deployment-aws-load-balancer-controller"
+  }
+}
+
+
