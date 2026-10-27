@@ -84,36 +84,6 @@ resource "aws_iam_role_policy_attachment" "eks_cni" {
 }
 
 
-###----LOAD BALANCER CONTROLLER ROLE
-
-resource "aws_iam_role" "load_balancer_controller" {
-  name = "${var.name}-load-balancer-controller-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-
-    Statement = [
-      {
-        Effect = "Allow"
-
-        Principal = {
-          Service = "pods.eks.amazonaws.com"
-        }
-
-        Action = [
-          "sts:AssumeRole",
-          "sts:TagSession"
-        ]
-      }
-    ]
-  })
-
-  tags = {
-    Name = "${var.name}-load-balancer-controller-role"
-  }
-}
-
-
 ###----AWS LOAD BALANCER CONTROLLER IAM POLICY
 
 resource "aws_iam_policy" "aws_load_balancer_controller" {
