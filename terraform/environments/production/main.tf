@@ -109,16 +109,3 @@ module "rds" {
 }
 
 
-###----Module APPLICATION LOAD BALANCER
-
-module "alb" {
-  source = "../../modules/alb"
-
-  name = "k8s-eks-app-deployment-alb"
-
-  vpc_id = module.vpc.vpc_id
-
-  public_subnet_ids = module.vpc.public_subnet_ids
-
-  security_group_id = module.security.alb_security_group_id
-}
