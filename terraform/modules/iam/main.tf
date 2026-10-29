@@ -1,19 +1,17 @@
-###----EKS ROLE
+
+###----EKS CLUSTER IAM ROLE
 
 resource "aws_iam_role" "eks_cluster" {
   name = "${var.name}-eks-cluster-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-
     Statement = [
       {
         Effect = "Allow"
-
         Principal = {
           Service = "eks.amazonaws.com"
         }
-
         Action = "sts:AssumeRole"
       }
     ]
@@ -33,22 +31,19 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
 }
 
 
-###----EKS NODE ROLE
+###----EKS WORKER NODE IAM ROLE
 
 resource "aws_iam_role" "eks_node" {
   name = "${var.name}-eks-node-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-
     Statement = [
       {
         Effect = "Allow"
-
         Principal = {
           Service = "ec2.amazonaws.com"
         }
-
         Action = "sts:AssumeRole"
       }
     ]
@@ -60,7 +55,7 @@ resource "aws_iam_role" "eks_node" {
 }
 
 
-###----EKS NODE POLICY
+###----EKS WORKER NODE POLICY
 
 resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
   role       = aws_iam_role.eks_node.name
@@ -68,7 +63,7 @@ resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
 }
 
 
-###----ECR READ ONLY POLICY FOR EKS NODE
+###----ECR READ-ONLY POLICY FOR WORKER NODES
 
 resource "aws_iam_role_policy_attachment" "ecr_read_only" {
   role       = aws_iam_role.eks_node.name
@@ -76,95 +71,9 @@ resource "aws_iam_role_policy_attachment" "ecr_read_only" {
 }
 
 
-###----CNI POLICY  FOR EKS NODE  (pod networking)
+###----VPC CNI POLICY FOR WORKER NODES
 
 resource "aws_iam_role_policy_attachment" "eks_cni" {
   role       = aws_iam_role.eks_node.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
-
-
-###----AWS LOAD BALANCER CONTROLLER IAM POLICY
-
-resource "aws_iam_policy" "aws_load_balancer_controller" {
-  name        = "k8s-eks-app-deployment-aws-load-balancer-controller"
-  description = "IAM permissions for AWS Load Balancer Controller"
-
-  policy = file("${path.module}/aws-load-balancer-controller-policy.json")
-
-  tags = {
-    Name = "k8s-eks-app-deployment-aws-load-balancer-controller"
-  }
-}
-
-
-###----EKS OIDC PROVIDER
-
-data "aws_iam_openid_connect_provider" "eks" {
-  url = var.eks_oidc_issuer_url
-}
-
-
-###----AWS LOAD BALANCER CONTROLLER TRUST POLICY
-
-data "aws_iam_policy_document" "aws_load_balancer_controller_assume_role" {
-
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "sts:AssumeRoleWithWebIdentity"
-    ]
-
-    principals {
-      type = "Federated"
-
-      identifiers = [
-        data.aws_iam_openid_connect_provider.eks.arn
-      ]
-    }
-
-    condition {
-      test = "StringEquals"
-
-      variable = "${replace(var.eks_oidc_issuer_url, "https://", "")}:sub"
-
-      values = [
-        "system:serviceaccount:kube-system:aws-load-balancer-controller"
-      ]
-    }
-
-    condition {
-      test = "StringEquals"
-
-      variable = "${replace(var.eks_oidc_issuer_url, "https://", "")}:aud"
-
-      values = [
-        "sts.amazonaws.com"
-      ]
-    }
-  }
-}
-
-###----AWS LOAD BALANCER CONTROLLER IAM ROLE
-
-resource "aws_iam_role" "aws_load_balancer_controller" {
-  name = "k8s-eks-app-deployment-aws-load-balancer-controller"
-
-  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_controller_assume_role.json
-
-  tags = {
-    Name = "k8s-eks-app-deployment-aws-load-balancer-controller"
-  }
-}
-
-
-###----AWS LOAD BALANCER CONTROLLER POLICY ATTACHMENT
-
-resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller" {
-  role = aws_iam_role.aws_load_balancer_controller.name
-
-  policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
-}
-
-

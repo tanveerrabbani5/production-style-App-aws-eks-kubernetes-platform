@@ -14,9 +14,3 @@ output "eks_node_role_arn" {
 }
 
 
-###----AWS LOAD BALANCER CONTROLLER ROLE ARN
-
-output "aws_load_balancer_controller_role_arn" {
-  description = "IAM role ARN for AWS Load Balancer Controller"
-  value       = aws_iam_role.aws_load_balancer_controller.arn
-}
