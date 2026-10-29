@@ -88,8 +88,9 @@ module "eks" {
 module "security" {
   source = "../../modules/security"
 
-  name   = "k8s-eks-app-deployment"
-  vpc_id = module.vpc.vpc_id
+  name                          = "k8s-eks-app-deployment"
+  vpc_id                        = module.vpc.vpc_id
+  eks_cluster_security_group_id = module.eks.cluster_security_group_id
 }
 
 
