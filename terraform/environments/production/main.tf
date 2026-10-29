@@ -42,6 +42,18 @@ module "iam" {
 }
 
 
+
+###----Module LOAD BALANCER CONTROLLER IAM
+
+module "iam_controller" {
+  source = "../../modules/iam-controller"
+
+  name                = "k8s-eks-app-deployment"
+  eks_oidc_issuer_url = module.eks.oidc_issuer_url
+}
+
+
+
 ###----Module EKS
 
 module "eks" {
