@@ -38,8 +38,7 @@ module "vpc" {
 module "iam" {
   source = "../../modules/iam"
 
-  name                = "k8s-eks-app-deployment"
-  eks_oidc_issuer_url = module.eks.oidc_issuer_url
+  name = "k8s-eks-app-deployment"
 }
 
 
