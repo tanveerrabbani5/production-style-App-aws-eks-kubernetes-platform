@@ -44,6 +44,8 @@ terraform.rc
 # planout
 
 
+# production plan ignore
+production.tfplan
 
 
 #############################################################################################
