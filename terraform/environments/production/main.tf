@@ -69,6 +69,8 @@ module "eks" {
 
   private_subnet_ids = module.vpc.private_subnet_ids
 
+  public_access_cidrs = ["27.61.59.16/32"]
+
   kubernetes_version = "1.33"
 
   node_instance_types = [
