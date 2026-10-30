@@ -84,3 +84,9 @@ variable "node_max_size" {
   type        = number
   default     = 2
 }
+
+
+variable "public_access_cidrs" {
+  description = "Allowed public IP ranges for EKS API access"
+  type        = list(string)
+}
